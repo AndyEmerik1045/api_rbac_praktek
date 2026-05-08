@@ -1,24 +1,23 @@
-import type { Request, Response } from 'express';
-import { RegisterUseCase } from '../../core/use-cases/register.usecase';
-import { LoginUseCase } from '../../core/use-cases/login.usecase';
-export class AuthController {
+import { Request, Response } from "express";
+import { registerUseCase } from "../../core/use-cases/auth/register.use-case";
+import { loginUseCase } from "../../core/use-cases/auth/login.use-case";
+
+export const AuthController = {
   async register(req: Request, res: Response) {
     try {
-      const { email, password, roleId } = req.body;
-      const data = await new RegisterUseCase().execute(email, password, roleId);
-      return res.json(data);
+      const user = await registerUseCase(req.body);
+      res.status(201).json(user);
     } catch (e: any) {
-      return res.status(400).json({ message: e.message });
+      res.status(400).json({ message: e.message });
     }
-  }
+  },
 
   async login(req: Request, res: Response) {
     try {
-      const { email, password } = req.body;
-      const token = await new LoginUseCase().execute(email, password);
-      return res.json({ token });
+      const result = await loginUseCase(req.body);
+      res.json(result);
     } catch (e: any) {
-      return res.status(401).json({ message: e.message });
+      res.status(401).json({ message: e.message });
     }
-  }
-}
+  },
+};
